@@ -12,7 +12,7 @@ const jobApplicationPath = "/jobs"
 const config = {
     origin: ['http://localhost:3000'],
     methods:['GET', 'POST', 'PUT', 'DELETE'], 
-    allowedHeaders: ['content-type'],
+    allowedHeaders: ['content-type', 'Authorization'],
     credentials:true,
 }
 
