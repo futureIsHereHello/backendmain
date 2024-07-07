@@ -242,6 +242,48 @@ const userSignup = async (req, res) => {
 };
 
 
+const searchJob = async (req, res) => {
+  try {
+    const { query, location, tags } = req.query;
+
+    const searchCriteria = {
+      $and: []
+    };
+
+    if (query) {
+      searchCriteria.$and.push({
+        $or: [
+          { title: { $regex: query, $options: 'i' } },
+          { company_name: { $regex: query, $options: 'i' } },
+          { details: { $regex: query, $options: 'i' } }
+        ]
+      });
+    }
+
+    if (location) {
+      searchCriteria.$and.push({
+        location: { $regex: location, $options: 'i' }
+      });
+    }
+
+    if (tags) {
+      const tagArray = tags.split(',').map(tag => tag.trim());
+      searchCriteria.$and.push({
+        tags: { $in: tagArray }
+      });
+    }
+
+    if (searchCriteria.$and.length === 0) {
+      const jobs = await jobSchema.find();
+      res.json(jobs);
+    } else {
+      const jobs = await jobSchema.find(searchCriteria);
+      res.json(jobs);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error Fetching jobs", error });
+  }
+};
 
 
-module.exports = {getJobByID, getAllJobs, updateBid,postJobs, applyForJob, getBidsForJob, userLogin, userSignup}
+module.exports = {getJobByID, getAllJobs, updateBid,postJobs, searchJob,  applyForJob, getBidsForJob, userLogin, userSignup}
